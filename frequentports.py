@@ -17,11 +17,11 @@ ip = "192.168.1.1"
 
 # sys.exit()
 
-showclosed = False
+showclosed = True
 debug = False
 timeout = 1
 maxport = 65535
-cportlist = [20,21,22,25,53,80,123,179,443,500,3389]
+cportlist = [20,21,22,25,53,80,123,179,443,500,3389,8000,8080]
 
 if ip != "":
 
@@ -56,7 +56,7 @@ try:
 		print("beginning scan of 65535 ports...")
 	# will scan ports between 1 to 65,535
 
-	for port in range(1, int(maxport)):
+	for port in cportlist:
 
 		if debug: 
 			print("--------\nAttempting port " + str(port))
@@ -103,4 +103,3 @@ except socket.error:
 	)
 
 	sys.exit()
-
