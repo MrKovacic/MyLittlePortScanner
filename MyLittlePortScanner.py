@@ -1,44 +1,58 @@
 import sys
 import socket
 from datetime import datetime
-# import argparse
+import argparse
 
-print("~~~> MyLittlePortScanner <~~~~")
+parser = argparse.ArgumentParser(
+	description="MyLittlePortScanner, simple light weight poert scanner"
+)
+parser.add_argument("host", nargs="?", help="Host you would like to port scan.")
+parser.add_argument(
+	"-v",
+	"--verbose",
+	dest="verbose",
+	action="store_true",
+	help="Increases logging",
+)
 
-# Parsing needed, this will be added later.
+parser.add_argument(
+	"-sp", dest="minport", default="1", help="Starting port"
+)
+parser.add_argument(
+	"-fp", dest="maxport",  default="65535", help="Final Port"
+)
 
-# Defining a target
+parser.add_argument(
+	"-sc", dest="showclosed", default=False, help="Show closed ports"
+)
 
-ip = "192.168.1.1"
+parser.add_argument(
+	"-to",
+	dest="timeout",
+	default=1,
+	type=int,
+	help="Timeout in seconds for new socket objects.",
+)
+parser.set_defaults(verbose=False)
+args = parser.parse_args()
+ip = args.host
 
-
-
-#ValidIpAddressRegex = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$" # This might be used to validate IP addresses later on
-
-# sys.exit()
-
-showclosed = False
-debug = False
-timeout = 1
-maxport = 65535
+showclosed = args.showclosed
+debug = args.verbose
 cportlist = [20,21,22,25,53,80,123,179,443,500,3389]
 
-if ip != "":
 
-	# translate hostname to IPv4
-	if debug: 
-		print("IP looks good.. opening up a socket..")
 
-	target = socket.gethostbyname(ip)
+if not args.host:
+	print("You forgot to specify a host.")
+	parser.print_help()
+	sys.exit(1)
 
-	if debug: 
+target = socket.gethostbyname(ip)
+
+if debug: 
 		print("Socket open.. starting scan...")
 
-else:
-
-	print("what the hell was that? I need an IP address.")
-
-# Add Banner 
 
 print("-" * 35)
 
@@ -56,7 +70,7 @@ try:
 		print("beginning scan of 65535 ports...")
 	# will scan ports between 1 to 65,535
 
-	for port in range(1, int(maxport)):
+	for port in range(int(args.minport), int(args.maxport)):
 
 		if debug: 
 			print("--------\nAttempting port " + str(port))
@@ -66,7 +80,7 @@ try:
 		if debug: 
 			print("Socket had been defined.")
 
-		socket.setdefaulttimeout(int(timeout))
+		socket.setdefaulttimeout(int(args.timeout))
 
 		if debug: 
 			print("Socket timeout has been set to " + str(timeout))
@@ -104,3 +118,4 @@ except socket.error:
 
 	sys.exit()
 
+	
